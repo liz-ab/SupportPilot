@@ -1,0 +1,60 @@
+{
+  "input_file": "customer_support_tickets.csv (uploaded Kaggle CSV)",
+  "input_records": 8469,
+  "output_records": 3216,
+  "output_category_counts": {
+    "Software": 600,
+    "Hardware": 600,
+    "Network": 516,
+    "System": 500,
+    "VPN": 500,
+    "Password": 500
+  },
+  "output_source_category_counts": {
+    "Hardware": {
+      "Kaggle": 600,
+      "Synthetic": 0
+    },
+    "Network": {
+      "Kaggle": 516,
+      "Synthetic": 0
+    },
+    "Password": {
+      "Kaggle": 0,
+      "Synthetic": 500
+    },
+    "Software": {
+      "Kaggle": 600,
+      "Synthetic": 0
+    },
+    "System": {
+      "Kaggle": 0,
+      "Synthetic": 500
+    },
+    "VPN": {
+      "Kaggle": 0,
+      "Synthetic": 500
+    }
+  },
+  "kaggle_subject_mapping": {
+    "Network problem": "Network",
+    "Software bug": "Software",
+    "Installation support": "Software",
+    "Hardware issue": "Hardware",
+    "Display issue": "Hardware",
+    "Peripheral compatibility": "Hardware"
+  },
+  "synthetic_categories": [
+    "VPN",
+    "Password",
+    "System"
+  ],
+  "cleaning": [
+    "selected only clearly relevant ticket subjects",
+    "removed email-like strings, postal codes, URLs and template placeholders",
+    "removed selected boilerplate phrases",
+    "lowercased text and removed punctuation and excess whitespace",
+    "removed empty/very short descriptions and duplicate ticket text",
+    "excluded personal/customer columns from the training dataset"
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "dataset_records_after_cleaning": 3216,
+  "train_records": 2572,
+  "test_records": 644,
+  "model": "TF-IDF (unigrams, sublinear term frequency) + Logistic Regression (C=2.0)",
+  "split": "80:20 stratified split, random_state=42",
+  "mixed_test_accuracy_percent": 67.7,
+  "kaggle_only_test_records": 344,
+  "kaggle_only_test_accuracy_percent": 39.53,
+  "synthetic_only_test_records": 300,
+  "synthetic_only_test_accuracy_percent": 100.0,
+  "target_percent": 90,
+  "target_met_on_kaggle_only_test": false,
+  "kaggle_only_classification_report": {
+    "Hardware": {
+      "precision": 0.43103448275862066,
+      "recall": 0.4166666666666667,
+      "f1-score": 0.423728813559322,
+      "support": 120.0
+    },
+    "Network": {
+      "precision": 0.3418803418803419,
+      "recall": 0.38461538461538464,
+      "f1-score": 0.36199095022624433,
+      "support": 104.0
+    },
+    "Software": {
+      "precision": 0.4144144144144144,
+      "recall": 0.38333333333333336,
+      "f1-score": 0.39826839826839827,
+      "support": 120.0
+    },
+    "accuracy": 0.3953488372093023,
+    "macro avg": {
+      "precision": 0.3957764130177923,
+      "recall": 0.39487179487179486,
+      "f1-score": 0.3946627206846549,
+      "support": 344.0
+    },
+    "weighted avg": {
+      "precision": 0.39828320702418535,
+      "recall": 0.3953488372093023,
+      "f1-score": 0.3961823379152786,
+      "support": 344.0
+    }
+  },
+  "mixed_classification_report": {
+    "Hardware": {
+      "precision": 0.43103448275862066,
+      "recall": 0.4166666666666667,
+      "f1-score": 0.423728813559322,
+      "support": 120.0
+    },
+    "Network": {
+      "precision": 0.3418803418803419,
+      "recall": 0.38461538461538464,
+      "f1-score": 0.36199095022624433,
+      "support": 104.0
+    },
+    "Password": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "Software": {
+      "precision": 0.4144144144144144,
+      "recall": 0.38333333333333336,
+      "f1-score": 0.39826839826839827,
+      "support": 120.0
+    },
+    "System": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "VPN": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 100.0
+    },
+    "accuracy": 0.6770186335403726,
+    "macro avg": {
+      "precision": 0.6978882065088962,
+      "recall": 0.6974358974358975,
+      "f1-score": 0.6973313603423273,
+      "support": 644.0
+    },
+    "weighted avg": {
+      "precision": 0.6785860608949065,
+      "recall": 0.6770186335403726,
+      "f1-score": 0.6774638575199624,
+      "support": 644.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      50,
+      38,
+      0,
+      32,
+      0,
+      0
+    ],
+    [
+      31,
+      40,
+      0,
+      33,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      100,
+      0,
+      0,
+      0
+    ],
+    [
+      35,
+      39,
+      0,
+      46,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      100,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      100
+    ]
+  ],
+  "class_labels": [
+    "Hardware",
+    "Network",
+    "Password",
+    "Software",
+    "System",
+    "VPN"
+  ],
+  "preprocessing": [
+    "lowercase text",
+    "remove template placeholders",
+    "remove URLs and email addresses",
+    "remove punctuation while preserving letters and digits",
+    "normalize whitespace",
+    "remove empty/very short records",
+    "remove duplicate cleaned ticket text"
+  ],
+  "evaluation_warning": "Kaggle-only accuracy is the honest real-source check for this dataset, but the source labels are mapped from Ticket Subject while the free-text descriptions are noisy and may contain unrelated or contradictory content. The synthetic-only score is not real-world validation. The mixed score must not be presented as real-world accuracy."
+}
