@@ -124,3 +124,10 @@ Severity is assigned by the simple keyword rules in `app.py` (Critical → High 
 - Severity is keyword-based and can miss context.
 - Confidence is not a guarantee of correctness.
 - This is a Milestone 1 prototype, not a production-ready ticketing system.
+
+<img width="1917" height="970" alt="Screenshot 2026-11-18 130602" src="https://github.com/user-attachments/assets/749a5784-60b0-4a64-8bce-90f97fa67d63" /> 
+<img width="900" height="792" alt="Screenshot 2026-11-18 130905" src="https://github.com/user-attachments/assets/ffa1523a-c056-4bbd-9df3-baf2637d0ded" />
+<img width="1532" height="187" alt="Screenshot 2026-11-18 130757" src="https://github.com/user-attachments/assets/e26f7bfe-3142-4400-a16f-19ff5e19d976" />
+
+
+
