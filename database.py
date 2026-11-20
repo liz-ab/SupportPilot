@@ -44,9 +44,10 @@ def save_ticket(ticket):
         ))
         return cursor.lastrowid
 
-def get_tickets(limit=100):
+def get_tickets(limit=None):
     with get_connection() as connection:
-        rows = connection.execute(
-            "SELECT * FROM tickets ORDER BY ticket_id DESC LIMIT ?", (limit,)
-        ).fetchall()
+        if limit is None:
+            rows = connection.execute("SELECT * FROM tickets ORDER BY ticket_id DESC").fetchall()
+        else:
+            rows = connection.execute("SELECT * FROM tickets ORDER BY ticket_id DESC LIMIT ?", (limit,)).fetchall()
         return [dict(row) for row in rows]
