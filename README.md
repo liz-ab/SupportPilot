@@ -4,31 +4,44 @@
 
 SupportPilot accepts IT support tickets, predicts a category, estimates severity, calculates priority, and stores submissions in SQLite.
 
-## Dataset and data provenance
+## Dataset
 
-The file `data/ticket_dataset.csv` contains 3,216 records across the six project categories:
+`data/ticket_dataset.csv` holds 3,594 cleaned English tickets built from three public collections (no synthetic records):
 
-- **Kaggle-derived:** 1,716 selected records from the user-provided `customer_support_tickets.csv`. The selected source subjects were Network problem, Software bug, Installation support, Hardware issue, Display issue, and Peripheral compatibility. These were mapped to Network, Software, and Hardware.
-- **Synthetic:** 1,500 supplementary training records for VPN, Password, and System, because the uploaded Kaggle file did not provide these as separate reliable labels.
+| Source | Notes |
+|---|---|
+| IT incidents (Hugging Face) | Real service-desk incidents; the main source for VPN and Password |
+| Helpdesk topics (Kaggle) | Pre-processed helpdesk tickets, used for Hardware and Password |
+| Multi-language support tickets (Kaggle) | English IT/Technical Support queue only |
 
-The `data_source` column identifies every record as `Kaggle` or `Synthetic`. The `source_subject` column retains the original subject or identifies a generated example. Synthetic rows are not presented as Kaggle data.
+Category counts: Software 1,297 · Password 939 · Hardware 664 · System 350 · Network 192 · VPN 152.
 
-The Kaggle dataset contains customer names, email addresses, demographic fields, product metadata and other columns that are not used by this classifier. Only the selected ticket text and mapped category are retained in the training CSV.
+Rebuild it with `python build_dataset.py` after placing the three raw CSV files in `data/raw/` (`it_incidents.csv`, `helpdesk_topics.csv`, `multilang_tickets.csv`). Raw files are not committed.
 
-## Data cleaning and preprocessing
+### Cleaning steps
 
-`classifier.py` contains the same preprocessing function used by training and prediction. It:
+1. Remove mail headers, addresses, URLs, ids, greetings and repeated titles.
+2. Keep English tickets of 4–120 words and drop duplicates.
+3. Drop tickets about unrelated business areas (medical, marketing, finance and similar).
+4. Assign a category only when the ticket headline points to exactly one area (rules in `labeling.py`).
+5. Where a source has its own label, keep the ticket only if it agrees with the rule label.
 
-1. Converts text to lowercase.
-2. Removes template placeholders such as `{product_purchased}`.
-3. Removes URLs and email addresses.
-4. Removes punctuation while retaining letters and digits.
-5. Normalizes repeated whitespace.
-6. The training script drops empty/very short rows and duplicate cleaned ticket text.
+### Limitations
 
-TF-IDF is fitted only on the training partition. The model uses unigram TF-IDF with sublinear term frequency and Logistic Regression (`C=2.0`, `class_weight="balanced"`). The split is stratified, 80:20, with `random_state=42`.
+No public dataset provides labels for these six categories directly, so category labels come from the rules above (checked against source labels where available). A 120-ticket sample (`data/audit_sample.csv`) was labelled by hand to measure this. Severity labels are not provided by any source, so severity uses a rule engine.
 
-**Important data-quality limitation:** The Kaggle dataset's subject labels do not consistently agree with the free-text descriptions. Some descriptions contain unrelated or contradictory text. Text cleaning can remove formatting noise, but cannot reliably correct incorrect labels or rewrite unrelated content. Therefore, the Kaggle-only test accuracy is the most important real-source metric and remains below the 90% target.
+## Results
+
+Run `python train_model.py` to regenerate `data/evaluation_report.json`.
+
+| Check | Result | Target |
+|---|---|---|
+| Category accuracy, held-out test (695 tickets) | 95.3% | 90% |
+| Category accuracy, hand-labelled sample (on-topic tickets) | 86.2% | 90% |
+| Category accuracy with key terms hidden | 70.2% | – |
+| Severity accuracy, hand-labelled sample (120 tickets) | 79.2% | 85% |
+
+The hand-labelled results are the most realistic. Category accuracy is above 85% but below the 90% target on that sample, and severity is below its 85% target. The audit sample is small, so these figures have a wide margin of error.
 
 ## Categories
 
@@ -36,12 +49,12 @@ Network, VPN, Password, Software, Hardware, System.
 
 ## Technologies
 
-Python, Flask, Pandas, scikit-learn, TF-IDF, Logistic Regression, Joblib, SQLite, HTML and Bootstrap.
+Python, Flask, Pandas, scikit-learn, TF-IDF, Logistic Regression, Joblib, SQLite, HTML, CSS and Chart.js.
 
 ## Setup on Windows / VS Code
 
 1. Install Python and Git.
-2. Extract the ZIP and open the extracted `SupportPilot_Milestone1_Kaggle` folder in VS Code.
+2. Clone the repository and open the folder in VS Code.
 3. Select **Terminal → New Terminal**.
 4. Create a virtual environment:
 
@@ -57,7 +70,7 @@ Python, Flask, Pandas, scikit-learn, TF-IDF, Logistic Regression, Joblib, SQLite
 
    `python -m pip install -r requirements.txt`
 
-7. Train the model and regenerate the evaluation report:
+7. Train the model and regenerate the evaluation report (the trained model is already included, so this step is optional):
 
    `python train_model.py`
 
@@ -84,50 +97,29 @@ POST `/api/tickets` with JSON:
 
 The response includes ticket ID, predicted category, severity, priority, confidence and status. Confidence is the model's probability estimate, not a guarantee of correctness.
 
-## Evaluation results
-
-The latest training run produced these measured results on the fixed stratified 80:20 split:
-
-| Evaluation subset | Test records | Accuracy |
-|---|---:|---:|
-| Mixed Kaggle + synthetic test set | 644 | 67.70% |
-| **Kaggle-only test subset** | **344** | **39.53%** |
-| Synthetic-only test subset | 300 | 100.00% |
-
-The 100% synthetic-only result is expected to be easier and is **not** evidence of real-world performance. Do not present the mixed or synthetic-only score as real-world accuracy. The 90% classification target is **not met** on the Kaggle-only test subset. The full per-class report and confusion matrix are in `data/evaluation_report.json`.
-
-These results are a reproducible baseline, not a claim that the model generalizes well to real enterprise tickets. A better real-world score requires a cleaner, correctly labelled IT-ticket dataset, especially for Network, Software and Hardware.
-
 ## Severity and priority
 
-Severity is assigned by the simple keyword rules in `app.py` (Critical → High → Medium → Low). Priority is calculated separately using severity and business impact. The small rule-based severity test file is a functional check, not proof of broad accuracy.
+Severity comes from a keyword rule engine in `labeling.py` (Critical, High, Medium, Low). It covers outages, urgency and blocked work, and treats routine requests such as password resets as Low. Priority is calculated from severity and the business impact chosen on the form; Critical tickets are always P1. Run `python evaluate_severity.py` to score the engine against the hand-labelled sample.
 
 ## Project files
 
-- `app.py`: Flask routes, ticket processing, severity and priority.
-- `train_model.py`: data cleaning, train/test split, TF-IDF training and evaluation.
-- `classifier.py`: shared text preprocessing, model loading and prediction.
+- `app.py`: Flask routes, ticket processing and priority.
+- `labeling.py`: text cleaning, category rules and severity rules.
+- `build_dataset.py`: builds `data/ticket_dataset.csv` from the raw sources.
+- `train_model.py`: trains the classifier and writes the evaluation report.
+- `classifier.py`: model loading and prediction.
+- `evaluate_severity.py`: scores severity against the hand-labelled sample.
 - `database.py`: SQLite table creation and ticket storage.
-- `templates/index.html`: Bootstrap interface.
-- `data/ticket_dataset.csv`: labelled Kaggle-derived and synthetic training records, with provenance columns.
-- `data/severity_test_cases.csv`: small severity evaluation set.
-- `evaluate_severity.py`: severity evaluation script.
-- `data/evaluation_report.json`: actual metrics from the latest training run.
-- `models/ticket_classifier.pkl`: saved TF-IDF vectorizer and Logistic Regression model.
+- `templates/index.html`, `static/style.css`, `static/dashboard.js`: web interface and dashboard.
+- `data/ticket_dataset.csv`: cleaned training data with source column.
+- `data/audit_sample.csv`: 120 hand-labelled tickets used only for evaluation.
+- `data/dataset_summary.json`, `data/evaluation_report.json`: build and evaluation details.
+- `models/ticket_classifier.pkl`: saved vectorizer and classifier.
 
-## Limitations to explain to your mentor
+## Known limitations
 
-- The Kaggle source is a general customer-support dataset, not a clean enterprise IT helpdesk dataset.
-- Kaggle labels were mapped from subject names, but some descriptions do not match those subjects.
-- VPN, Password and System training records are synthetic because the source does not provide those labels separately.
-- The Kaggle-only held-out accuracy is 39.53%, below the 90% target.
+- Category labels are rule-derived because no public dataset labels these six categories directly.
+- The hand-labelled sample is small (120 tickets), so measured accuracy has a wide margin of error.
 - Severity is keyword-based and can miss context.
-- Confidence is not a guarantee of correctness.
-- This is a Milestone 1 prototype, not a production-ready ticketing system.
-
-<img width="1917" height="970" alt="Screenshot 2026-11-18 130602" src="https://github.com/user-attachments/assets/749a5784-60b0-4a64-8bce-90f97fa67d63" /> 
-<img width="900" height="792" alt="Screenshot 2026-11-18 130905" src="https://github.com/user-attachments/assets/ffa1523a-c056-4bbd-9df3-baf2637d0ded" />
-<img width="1532" height="187" alt="Screenshot 2026-11-18 130757" src="https://github.com/user-attachments/assets/e26f7bfe-3142-4400-a16f-19ff5e19d976" />
-
-
-
+- Confidence is a probability estimate, not a guarantee.
+- This is a Milestone 1 prototype, not a production ticketing system.

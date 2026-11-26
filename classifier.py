@@ -1,31 +1,32 @@
 import os
-import re
 import joblib
+from labeling import clean_text, rule_severity
 
 MODEL_PATH = os.path.join("models", "ticket_classifier.pkl")
+_bundle = None
 
 
 def preprocess_text(text):
-    text = str(text).lower()
-    text = re.sub(r"\{[^}]*\}", " ", text)
-    text = re.sub(r"https?://\S+|www\.\S+", " ", text)
-    text = re.sub(r"\b[\w.+-]+@[\w.-]+\.[a-z]{2,}\b", " ", text)
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
-    return re.sub(r"\s+", " ", text).strip()
+    return clean_text(text)
 
 
 def load_model():
-    if not os.path.exists(MODEL_PATH):
-        raise FileNotFoundError("Model not found. Run: python train_model.py")
-    return joblib.load(MODEL_PATH)
+    global _bundle
+    if _bundle is None:
+        if not os.path.exists(MODEL_PATH):
+            raise FileNotFoundError("Model not found. Run: python train_model.py")
+        _bundle = joblib.load(MODEL_PATH)
+    return _bundle
 
 
 def predict_category(text, bundle=None):
-    if bundle is None:
-        bundle = load_model()
-    cleaned = preprocess_text(text)
-    vector = bundle["vectorizer"].transform([cleaned])
-    category = bundle["model"].predict(vector)[0]
+    bundle = bundle or load_model()
+    vector = bundle["vectorizer"].transform([preprocess_text(text)])
     probabilities = bundle["model"].predict_proba(vector)[0]
-    confidence = float(max(probabilities))
-    return category, confidence
+    best = probabilities.argmax()
+    return bundle["model"].classes_[best], float(probabilities[best])
+
+
+def predict_severity(text):
+    """Severity comes from the rule engine, which scored best against the hand-labelled audit set."""
+    return rule_severity(preprocess_text(text))

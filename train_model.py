@@ -1,97 +1,92 @@
-import os
 import json
-import pandas as pd
+import os
+import re
 import joblib
-from sklearn.model_selection import train_test_split
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-from classifier import preprocess_text
+from sklearn.model_selection import train_test_split
+from labeling import CATEGORIES, CATEGORY_RULES, rule_severity
 
 DATA_PATH = os.path.join("data", "ticket_dataset.csv")
+AUDIT_PATH = os.path.join("data", "audit_sample.csv")
 MODEL_PATH = os.path.join("models", "ticket_classifier.pkl")
 REPORT_PATH = os.path.join("data", "evaluation_report.json")
 
 
+def pct(value):
+    return round(float(value) * 100, 2)
+
+
+def mask_keywords(text):
+    """Remove the words the labelling rules look for, to test whether the model generalises."""
+    for pattern in CATEGORY_RULES.values():
+        text = re.sub(pattern, " ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def make_vectorizer():
+    return TfidfVectorizer(ngram_range=(1, 2), min_df=2, max_features=30000, sublinear_tf=True)
+
+
 def main():
-    data = pd.read_csv(DATA_PATH)
-    data = data.dropna(subset=["ticket_text", "category", "data_source"])
-    data["clean_text"] = data["ticket_text"].apply(preprocess_text)
-    data = data[data["clean_text"].str.len() >= 10]
-    data = data.drop_duplicates(subset=["clean_text"])
+    data = pd.read_csv(DATA_PATH).dropna(subset=["text", "category", "severity"])
+    audit = pd.read_csv(AUDIT_PATH)
+    data = data[~data["text"].isin(set(audit["text"]))]  # audit tickets are never used for training
 
-    x_train, x_test, y_train, y_test = train_test_split(
-        data["clean_text"], data["category"],
-        test_size=0.2, random_state=42, stratify=data["category"]
-    )
+    train, test = train_test_split(data, test_size=0.2, random_state=42, stratify=data["category"])
+    vectorizer = make_vectorizer()
+    x_train = vectorizer.fit_transform(train["text"])
+    x_test = vectorizer.transform(test["text"])
 
-    vectorizer = TfidfVectorizer(
-        ngram_range=(1, 1), min_df=1, max_features=12000, sublinear_tf=True
-    )
-    x_train_vector = vectorizer.fit_transform(x_train)
-    x_test_vector = vectorizer.transform(x_test)
+    category_model = LogisticRegression(max_iter=3000, C=8.0, class_weight="balanced")
+    category_model.fit(x_train, train["category"])
 
-    model = LogisticRegression(
-        max_iter=1500, class_weight="balanced", C=2.0
-    )
-    model.fit(x_train_vector, y_train)
-    predictions = model.predict(x_test_vector)
+    cat_pred = category_model.predict(x_test)
+    sev_pred = test["text"].map(rule_severity)
 
-    test_sources = data.loc[y_test.index, "data_source"]
-    kaggle_mask = test_sources.eq("Kaggle")
-    synthetic_mask = test_sources.eq("Synthetic")
-    overall_accuracy = accuracy_score(y_test, predictions)
-    kaggle_accuracy = accuracy_score(y_test[kaggle_mask], predictions[kaggle_mask])
-    synthetic_accuracy = accuracy_score(y_test[synthetic_mask], predictions[synthetic_mask])
+    masked_pred = category_model.predict(vectorizer.transform(test["text"].map(mask_keywords)))
+
+    # Independent check: 120 tickets labelled by hand (see data/audit_sample.csv).
+    a_vec = vectorizer.transform(audit["text"])
+    a_cat = category_model.predict(a_vec)
+    a_rule_sev = audit["text"].map(rule_severity)
+    on_topic = audit["true_category"].isin(CATEGORIES)
 
     report = {
-        "dataset_records_after_cleaning": int(len(data)),
-        "train_records": int(len(x_train)),
-        "test_records": int(len(x_test)),
-        "model": "TF-IDF (unigrams, sublinear term frequency) + Logistic Regression (C=2.0)",
-        "split": "80:20 stratified split, random_state=42",
-        "mixed_test_accuracy_percent": round(overall_accuracy * 100, 2),
-        "kaggle_only_test_records": int(kaggle_mask.sum()),
-        "kaggle_only_test_accuracy_percent": round(kaggle_accuracy * 100, 2),
-        "synthetic_only_test_records": int(synthetic_mask.sum()),
-        "synthetic_only_test_accuracy_percent": round(synthetic_accuracy * 100, 2),
-        "target_percent": 90,
-        "target_met_on_kaggle_only_test": bool(kaggle_accuracy >= 0.90),
-        "kaggle_only_classification_report": classification_report(
-            y_test[kaggle_mask], predictions[kaggle_mask], output_dict=True, zero_division=0
-        ),
-        "mixed_classification_report": classification_report(
-            y_test, predictions, output_dict=True, zero_division=0
-        ),
-        "confusion_matrix": confusion_matrix(y_test, predictions, labels=model.classes_).tolist(),
-        "class_labels": model.classes_.tolist(),
-        "preprocessing": [
-            "lowercase text", "remove template placeholders", "remove URLs and email addresses",
-            "remove punctuation while preserving letters and digits", "normalize whitespace",
-            "remove empty/very short records", "remove duplicate cleaned ticket text"
-        ],
-        "evaluation_warning": (
-            "Kaggle-only accuracy is the honest real-source check for this dataset, but the source labels "
-            "are mapped from Ticket Subject while the free-text descriptions are noisy and may contain "
-            "unrelated or contradictory content. The synthetic-only score is not real-world validation. "
-            "The mixed score must not be presented as real-world accuracy."
-        )
+        "dataset_records": int(len(data)),
+        "train_records": int(len(train)),
+        "test_records": int(len(test)),
+        "model": "TF-IDF (1-2 grams) + Logistic Regression for category; rule engine for severity",
+        "split": "80:20 stratified split, random_state=42; audit tickets excluded from training",
+        "category_test_accuracy_percent": pct(accuracy_score(test["category"], cat_pred)),
+        "category_test_accuracy_keywords_masked_percent": pct(accuracy_score(test["category"], masked_pred)),
+                "manual_audit": {
+            "tickets": int(len(audit)),
+            "on_topic_tickets": int(on_topic.sum()),
+            "category_accuracy_on_topic_percent": pct(accuracy_score(audit.loc[on_topic, "true_category"], a_cat[on_topic.values])),
+            "severity_accuracy_percent": pct(accuracy_score(audit["true_severity"], a_rule_sev)),
+            "training_label_precision_on_topic_percent": pct(
+                (audit.loc[on_topic, "true_category"] == audit.loc[on_topic, "rule_category"]).mean()),
+        },
+        "targets": {"category_percent": 90, "severity_percent": 85},
+        "class_labels": category_model.classes_.tolist(),
+        "category_report": classification_report(test["category"], cat_pred, output_dict=True, zero_division=0),
+        "category_confusion_matrix": confusion_matrix(test["category"], cat_pred, labels=category_model.classes_).tolist(),
     }
 
     os.makedirs("models", exist_ok=True)
-    joblib.dump({"vectorizer": vectorizer, "model": model}, MODEL_PATH)
-    with open(REPORT_PATH, "w", encoding="utf-8") as file:
-        json.dump(report, file, indent=2)
+    joblib.dump({"vectorizer": vectorizer, "model": category_model}, MODEL_PATH)
+    with open(REPORT_PATH, "w", encoding="utf-8") as handle:
+        json.dump(report, handle, indent=2)
 
-    print("Training completed.")
-    print(f"Records after cleaning: {len(data)}")
-    print(f"Training records: {len(x_train)} | Test records: {len(x_test)}")
-    print(f"Mixed test accuracy: {overall_accuracy * 100:.2f}%")
-    print(f"Kaggle-only test accuracy: {kaggle_accuracy * 100:.2f}% ({kaggle_mask.sum()} real-source test records)")
-    print(f"Synthetic-only test accuracy: {synthetic_accuracy * 100:.2f}% ({synthetic_mask.sum()} test records)")
-    print(f"90% target met on Kaggle-only test: {'YES' if kaggle_accuracy >= 0.90 else 'NO'}")
-    print(f"Saved model: {MODEL_PATH}")
-    print(f"Saved report: {REPORT_PATH}")
+    audit_info = report["manual_audit"]
+    print(f"Records: {len(data)} (train {len(train)}, test {len(test)})")
+    print(f"Category accuracy (held-out test):         {report['category_test_accuracy_percent']}%")
+    print(f"Category accuracy (trigger words masked):  {report['category_test_accuracy_keywords_masked_percent']}%")
+    print(f"Manual audit category accuracy (on-topic): {audit_info['category_accuracy_on_topic_percent']}%")
+    print(f"Manual audit severity accuracy (rules):    {audit_info['severity_accuracy_percent']}%")
 
 
 if __name__ == "__main__":

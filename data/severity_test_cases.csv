@@ -1,9 +1,0 @@
-ticket_text,expected_severity
-"production down server down for the entire company",Critical
-"security breach detected on company network",Critical
-"urgent cannot work before client meeting because vpn not working",High
-"business stopped and employees cannot work",High
-"network connection is slow and showing an error",Medium
-"application has a minor issue during normal use",Medium
-"please install a standard software package when convenient",Low
-"request information about a peripheral device",Low

@@ -6,3 +6,4 @@ __pycache__/
 .DS_Store
 tickets.db
 models/*.tmp
+data/raw/

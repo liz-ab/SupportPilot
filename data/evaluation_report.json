@@ -1,150 +1,22 @@
 {
-  "dataset_records_after_cleaning": 3216,
-  "train_records": 2572,
-  "test_records": 644,
-  "model": "TF-IDF (unigrams, sublinear term frequency) + Logistic Regression (C=2.0)",
-  "split": "80:20 stratified split, random_state=42",
-  "mixed_test_accuracy_percent": 67.7,
-  "kaggle_only_test_records": 344,
-  "kaggle_only_test_accuracy_percent": 39.53,
-  "synthetic_only_test_records": 300,
-  "synthetic_only_test_accuracy_percent": 100.0,
-  "target_percent": 90,
-  "target_met_on_kaggle_only_test": false,
-  "kaggle_only_classification_report": {
-    "Hardware": {
-      "precision": 0.43103448275862066,
-      "recall": 0.4166666666666667,
-      "f1-score": 0.423728813559322,
-      "support": 120.0
-    },
-    "Network": {
-      "precision": 0.3418803418803419,
-      "recall": 0.38461538461538464,
-      "f1-score": 0.36199095022624433,
-      "support": 104.0
-    },
-    "Software": {
-      "precision": 0.4144144144144144,
-      "recall": 0.38333333333333336,
-      "f1-score": 0.39826839826839827,
-      "support": 120.0
-    },
-    "accuracy": 0.3953488372093023,
-    "macro avg": {
-      "precision": 0.3957764130177923,
-      "recall": 0.39487179487179486,
-      "f1-score": 0.3946627206846549,
-      "support": 344.0
-    },
-    "weighted avg": {
-      "precision": 0.39828320702418535,
-      "recall": 0.3953488372093023,
-      "f1-score": 0.3961823379152786,
-      "support": 344.0
-    }
+  "dataset_records": 3474,
+  "train_records": 2779,
+  "test_records": 695,
+  "model": "TF-IDF (1-2 grams) + Logistic Regression for category; rule engine for severity",
+  "split": "80:20 stratified split, random_state=42; audit tickets excluded from training",
+  "category_test_accuracy_percent": 95.25,
+  "category_test_accuracy_keywords_masked_percent": 70.22,
+  "manual_audit": {
+    "tickets": 120,
+    "on_topic_tickets": 109,
+    "category_accuracy_on_topic_percent": 86.24,
+    "severity_accuracy_percent": 79.17,
+    "training_label_precision_on_topic_percent": 87.16
   },
-  "mixed_classification_report": {
-    "Hardware": {
-      "precision": 0.43103448275862066,
-      "recall": 0.4166666666666667,
-      "f1-score": 0.423728813559322,
-      "support": 120.0
-    },
-    "Network": {
-      "precision": 0.3418803418803419,
-      "recall": 0.38461538461538464,
-      "f1-score": 0.36199095022624433,
-      "support": 104.0
-    },
-    "Password": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 100.0
-    },
-    "Software": {
-      "precision": 0.4144144144144144,
-      "recall": 0.38333333333333336,
-      "f1-score": 0.39826839826839827,
-      "support": 120.0
-    },
-    "System": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 100.0
-    },
-    "VPN": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 100.0
-    },
-    "accuracy": 0.6770186335403726,
-    "macro avg": {
-      "precision": 0.6978882065088962,
-      "recall": 0.6974358974358975,
-      "f1-score": 0.6973313603423273,
-      "support": 644.0
-    },
-    "weighted avg": {
-      "precision": 0.6785860608949065,
-      "recall": 0.6770186335403726,
-      "f1-score": 0.6774638575199624,
-      "support": 644.0
-    }
+  "targets": {
+    "category_percent": 90,
+    "severity_percent": 85
   },
-  "confusion_matrix": [
-    [
-      50,
-      38,
-      0,
-      32,
-      0,
-      0
-    ],
-    [
-      31,
-      40,
-      0,
-      33,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      100,
-      0,
-      0,
-      0
-    ],
-    [
-      35,
-      39,
-      0,
-      46,
-      0,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      100,
-      0
-    ],
-    [
-      0,
-      0,
-      0,
-      0,
-      0,
-      100
-    ]
-  ],
   "class_labels": [
     "Hardware",
     "Network",
@@ -153,14 +25,105 @@
     "System",
     "VPN"
   ],
-  "preprocessing": [
-    "lowercase text",
-    "remove template placeholders",
-    "remove URLs and email addresses",
-    "remove punctuation while preserving letters and digits",
-    "normalize whitespace",
-    "remove empty/very short records",
-    "remove duplicate cleaned ticket text"
-  ],
-  "evaluation_warning": "Kaggle-only accuracy is the honest real-source check for this dataset, but the source labels are mapped from Ticket Subject while the free-text descriptions are noisy and may contain unrelated or contradictory content. The synthetic-only score is not real-world validation. The mixed score must not be presented as real-world accuracy."
+  "category_report": {
+    "Hardware": {
+      "precision": 0.9689922480620154,
+      "recall": 0.9689922480620154,
+      "f1-score": 0.9689922480620154,
+      "support": 129.0
+    },
+    "Network": {
+      "precision": 0.8857142857142857,
+      "recall": 0.8378378378378378,
+      "f1-score": 0.8611111111111112,
+      "support": 37.0
+    },
+    "Password": {
+      "precision": 0.9883720930232558,
+      "recall": 0.9497206703910615,
+      "f1-score": 0.9686609686609686,
+      "support": 179.0
+    },
+    "Software": {
+      "precision": 0.9360902255639098,
+      "recall": 0.9803149606299213,
+      "f1-score": 0.9576923076923077,
+      "support": 254.0
+    },
+    "System": {
+      "precision": 0.9117647058823529,
+      "recall": 0.9253731343283582,
+      "f1-score": 0.9185185185185185,
+      "support": 67.0
+    },
+    "VPN": {
+      "precision": 1.0,
+      "recall": 0.8620689655172413,
+      "f1-score": 0.9259259259259259,
+      "support": 29.0
+    },
+    "accuracy": 0.9525179856115108,
+    "macro avg": {
+      "precision": 0.9484889263743033,
+      "recall": 0.9207179694610725,
+      "f1-score": 0.9334835133284746,
+      "support": 695.0
+    },
+    "weighted avg": {
+      "precision": 0.953302425625816,
+      "recall": 0.9525179856115108,
+      "f1-score": 0.9523710262559182,
+      "support": 695.0
+    }
+  },
+  "category_confusion_matrix": [
+    [
+      125,
+      0,
+      0,
+      3,
+      1,
+      0
+    ],
+    [
+      1,
+      31,
+      0,
+      4,
+      1,
+      0
+    ],
+    [
+      3,
+      0,
+      170,
+      5,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      1,
+      249,
+      3,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      4,
+      62,
+      0
+    ],
+    [
+      0,
+      2,
+      1,
+      1,
+      0,
+      25
+    ]
+  ]
 }
