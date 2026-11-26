@@ -1,0 +1,450 @@
+[
+  {
+    "id": "KB001",
+    "title": "VPN Troubleshooting Guide",
+    "category": "Network Connectivity",
+    "ticket_category": "VPN",
+    "tags": [
+      "vpn",
+      "timeout",
+      "connection"
+    ],
+    "content": "Step-by-step instructions for resolving VPN connection issues.\n\n1. Verify that the user has an active internet connection.\n2. Check VPN client configuration.\n3. Verify the VPN server address.\n4. Verify authentication settings.\n5. Restart the VPN service.\n6. Clear cached credentials if authentication fails.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB002",
+    "title": "Network Firewall Configuration",
+    "category": "IT Policies",
+    "ticket_category": "VPN",
+    "tags": [
+      "firewall",
+      "ports",
+      "ipsec"
+    ],
+    "content": "Corporate firewalls must allow VPN traffic.\n\n1. Verify that VPN traffic is permitted on the required ports, including ports 500 and 4500 for IPsec-based VPN connections.\n2. Check that the user's current network does not block outbound VPN traffic.\n3. Raise a firewall change request if a required port is blocked.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB003",
+    "title": "VPN Authentication Problems",
+    "category": "Authentication",
+    "ticket_category": "VPN",
+    "tags": [
+      "vpn",
+      "authentication",
+      "mfa",
+      "credentials"
+    ],
+    "content": "If VPN authentication fails, check the sign-in details and the client settings.\n\n1. Verify the username and password.\n2. Verify the MFA configuration and that the code has not expired.\n3. Clear cached credentials in the VPN client.\n4. Confirm the authentication method configured in the VPN client.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB004",
+    "title": "VPN Disconnects and Dropped Sessions",
+    "category": "Network Connectivity",
+    "ticket_category": "VPN",
+    "tags": [
+      "vpn",
+      "disconnect",
+      "drops",
+      "unstable"
+    ],
+    "content": "Use this guide when the VPN connects but keeps dropping.\n\n1. Check the stability of the home or mobile internet connection.\n2. Switch from Wi-Fi to a wired connection if possible.\n3. Disable power saving on the network adapter.\n4. Update the VPN client to the latest approved version.\n5. Try a different VPN gateway region.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB005",
+    "title": "VPN Client Installation and Update",
+    "category": "Software",
+    "ticket_category": "VPN",
+    "tags": [
+      "vpn",
+      "install",
+      "client",
+      "update"
+    ],
+    "content": "Use this guide when the VPN client is missing, outdated or fails to start.\n\n1. Download the approved VPN client from the company software portal.\n2. Run the installer with administrator rights.\n3. Restart the computer after installation.\n4. Import the corporate VPN profile and test the connection.\n5. Reinstall the client if the service does not start.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB006",
+    "title": "Wi-Fi Connectivity Troubleshooting",
+    "category": "Network Connectivity",
+    "ticket_category": "Network",
+    "tags": [
+      "wifi",
+      "wireless",
+      "network",
+      "connect"
+    ],
+    "content": "Use this guide when a device cannot join or stay on the corporate Wi-Fi.\n\n1. Check that Wi-Fi is turned on and airplane mode is off.\n2. Forget the corporate network and reconnect with current credentials.\n3. Move closer to the access point and test again.\n4. Restart the wireless adapter or the device.\n5. Test another device on the same network to see if the access point is affected.\n6. Report the location and access point name if several users are affected.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB007",
+    "title": "Slow Network and Latency",
+    "category": "Network Connectivity",
+    "ticket_category": "Network",
+    "tags": [
+      "slow",
+      "latency",
+      "bandwidth",
+      "internet"
+    ],
+    "content": "Use this guide for slow internet or slow access to internal systems.\n\n1. Run a speed test and note the result.\n2. Check whether the problem affects one device or many.\n3. Close bandwidth-heavy applications and cloud sync jobs.\n4. Restart the router or switch if the device is in a branch office.\n5. Escalate to the network team with test results if the problem persists.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB008",
+    "title": "DNS Resolution Failures",
+    "category": "Network Connectivity",
+    "ticket_category": "Network",
+    "tags": [
+      "dns",
+      "resolve",
+      "website",
+      "name"
+    ],
+    "content": "Use this guide when websites or internal servers cannot be reached by name.\n\n1. Try to reach the target by IP address to confirm it is a DNS problem.\n2. Flush the DNS cache on the device.\n3. Check that the device uses the corporate DNS servers.\n4. Restart the network connection and retry.\n5. Report the failing hostname to the network team.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB009",
+    "title": "Network Drive and Shared Folder Access",
+    "category": "Network Connectivity",
+    "ticket_category": "Network",
+    "tags": [
+      "network drive",
+      "shared folder",
+      "mapped drive",
+      "access"
+    ],
+    "content": "Use this guide when a mapped drive or shared folder is missing or inaccessible.\n\n1. Check that the device is on the corporate network or connected to the VPN.\n2. Remap the drive using the correct network path.\n3. Confirm the user is a member of the required access group.\n4. Sign out and back in to refresh permissions.\n5. Raise an access request if the user needs new permissions.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB010",
+    "title": "Password Reset Procedure",
+    "category": "Authentication",
+    "ticket_category": "Password",
+    "tags": [
+      "password",
+      "reset",
+      "forgot",
+      "login"
+    ],
+    "content": "Use this procedure when a user forgot their password or needs a reset.\n\n1. Verify the identity of the user with employee ID and manager name.\n2. Reset the password in the directory management tool.\n3. Set a temporary password and require a change at next sign-in.\n4. Ask the user to sign in and confirm access.\n5. Remind the user to update saved passwords on phones and applications.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB011",
+    "title": "Account Locked Out",
+    "category": "Authentication",
+    "ticket_category": "Password",
+    "tags": [
+      "locked",
+      "unlock",
+      "account",
+      "attempts"
+    ],
+    "content": "Accounts lock after repeated failed sign-in attempts.\n\n1. Verify the identity of the user.\n2. Unlock the account in the directory management tool.\n3. Check which device or application keeps sending an old password.\n4. Update saved passwords on that device or application.\n5. Ask the user to sign in and confirm the account stays unlocked.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB012",
+    "title": "Password Expiry and Policy",
+    "category": "IT Policies",
+    "ticket_category": "Password",
+    "tags": [
+      "password",
+      "expired",
+      "expiry",
+      "policy"
+    ],
+    "content": "Passwords expire on a fixed schedule and must meet the complexity policy.\n\n1. Ask the user to change the password from the self-service portal before it expires.\n2. If it has expired, reset it with the password reset procedure.\n3. Explain the policy: minimum length, mixed characters and no reuse of recent passwords.\n4. Update the new password in mail, VPN and mobile apps.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB013",
+    "title": "MFA and Authenticator App Problems",
+    "category": "Authentication",
+    "ticket_category": "Password",
+    "tags": [
+      "mfa",
+      "authenticator",
+      "token",
+      "code"
+    ],
+    "content": "Use this guide when multi-factor codes are rejected or unavailable.\n\n1. Check that the device clock and time zone are set automatically.\n2. Ask the user to request a new code.\n3. Re-register the authenticator app if the codes are still rejected.\n4. Verify identity and reset the MFA registration if the phone was lost or replaced.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB014",
+    "title": "Application Login Failures",
+    "category": "Authentication",
+    "ticket_category": "Password",
+    "tags": [
+      "login",
+      "sso",
+      "erp",
+      "portal",
+      "access"
+    ],
+    "content": "Use this guide when a user cannot sign in to a business application such as ERP or a portal.\n\n1. Confirm the user ID and that the account is active.\n2. Check whether the password was changed recently and update the saved one.\n3. Clear browser cache and cookies, then retry.\n4. Verify that the user has been granted access to the application.\n5. Raise an access request with the application owner if access is missing.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB015",
+    "title": "Software Installation Requests",
+    "category": "Software",
+    "ticket_category": "Software",
+    "tags": [
+      "install",
+      "software",
+      "application",
+      "request"
+    ],
+    "content": "Approved software is installed through the company software portal.\n\n1. Check that the application is on the approved software list.\n2. Install it from the software portal or push it remotely.\n3. If it is not approved, submit a software request for manager and security approval.\n4. Confirm the application starts and that a licence is assigned if required.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB016",
+    "title": "Microsoft Outlook Troubleshooting",
+    "category": "Software",
+    "ticket_category": "Software",
+    "tags": [
+      "outlook",
+      "email",
+      "calendar",
+      "sync"
+    ],
+    "content": "Use this guide for Outlook crashes, sync problems and missing calendar items.\n\n1. Restart Outlook and check that the account is online.\n2. Start Outlook in safe mode to rule out add-ins.\n3. Repair the Outlook profile or create a new profile.\n4. Check the mailbox size and archive old items.\n5. Reinstall Office if the problem continues.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB017",
+    "title": "Microsoft Office Activation and Licensing",
+    "category": "Software",
+    "ticket_category": "Software",
+    "tags": [
+      "office",
+      "licence",
+      "license",
+      "activation"
+    ],
+    "content": "Use this guide when Office shows an activation or licence warning.\n\n1. Sign out of Office and sign in again with the work account.\n2. Check that a licence is assigned to the user.\n3. Run an Office repair from the control panel.\n4. Reassign the licence in the admin portal if it is missing.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB018",
+    "title": "Application Crashes and Errors",
+    "category": "Software",
+    "ticket_category": "Software",
+    "tags": [
+      "crash",
+      "error",
+      "application",
+      "freeze"
+    ],
+    "content": "Use this guide when an application closes unexpectedly or shows an error.\n\n1. Note the exact error message and when it appears.\n2. Restart the application and the computer.\n3. Install pending updates for the application.\n4. Repair or reinstall the application.\n5. Escalate to the application owner with the error message and a screenshot.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB019",
+    "title": "Browser Issues and Certificate Errors",
+    "category": "Software",
+    "ticket_category": "Software",
+    "tags": [
+      "browser",
+      "certificate",
+      "chrome",
+      "website"
+    ],
+    "content": "Use this guide for pages that will not load or show certificate warnings.\n\n1. Clear browser cache and cookies.\n2. Disable extensions and retry.\n3. Check the date and time on the computer.\n4. Try a different approved browser.\n5. Report certificate warnings on internal sites to the security team.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB020",
+    "title": "Laptop Will Not Power On or Battery Problems",
+    "category": "Hardware",
+    "ticket_category": "Hardware",
+    "tags": [
+      "laptop",
+      "power",
+      "battery",
+      "charger"
+    ],
+    "content": "Use this guide when a laptop does not start or the battery drains fast.\n\n1. Check that the charger and power outlet work.\n2. Hold the power button for 15 seconds and try again.\n3. Remove the charger, drain residual power and reconnect.\n4. Check the battery health report.\n5. Arrange a replacement battery or laptop if the fault continues.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB021",
+    "title": "Printer Troubleshooting",
+    "category": "Hardware",
+    "ticket_category": "Hardware",
+    "tags": [
+      "printer",
+      "print",
+      "toner",
+      "queue"
+    ],
+    "content": "Use this guide when a printer is offline, stuck or prints badly.\n\n1. Check that the printer is powered on and connected to the network.\n2. Clear the print queue and restart the print spooler.\n3. Re-add the printer using the correct address.\n4. Check paper, jams and toner.\n5. Log a service call with the printer name and location.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB022",
+    "title": "Monitor and Display Problems",
+    "category": "Hardware",
+    "ticket_category": "Hardware",
+    "tags": [
+      "monitor",
+      "display",
+      "screen",
+      "flicker"
+    ],
+    "content": "Use this guide for no signal, flicker or blurry screens.\n\n1. Check the cable connections at both ends.\n2. Try another cable or port.\n3. Set the correct resolution and refresh rate in display settings.\n4. Update the graphics driver.\n5. Test with another monitor to isolate the fault.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB023",
+    "title": "Keyboard, Mouse and USB Peripherals",
+    "category": "Hardware",
+    "ticket_category": "Hardware",
+    "tags": [
+      "keyboard",
+      "mouse",
+      "usb",
+      "peripheral"
+    ],
+    "content": "Use this guide when a keyboard, mouse or USB device stops working.\n\n1. Reconnect the device or replace its batteries if it is wireless.\n2. Try another USB port.\n3. Test the device on another computer.\n4. Reinstall the device driver.\n5. Order a replacement if the device is faulty.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB024",
+    "title": "Headset, Audio and Webcam Problems",
+    "category": "Hardware",
+    "ticket_category": "Hardware",
+    "tags": [
+      "headset",
+      "audio",
+      "microphone",
+      "webcam"
+    ],
+    "content": "Use this guide for no sound, no microphone or no camera.\n\n1. Select the correct input and output device in the meeting application.\n2. Check that the device is not muted and the volume is up.\n3. Check camera and microphone privacy permissions.\n4. Update or reinstall the audio driver.\n5. Test the headset on another computer.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB025",
+    "title": "Windows Slow Performance",
+    "category": "System",
+    "ticket_category": "System",
+    "tags": [
+      "slow",
+      "performance",
+      "windows",
+      "freeze"
+    ],
+    "content": "Use this guide when a computer is slow or freezes.\n\n1. Restart the computer.\n2. Check CPU, memory and disk usage in Task Manager.\n3. Close unused applications and disable unnecessary startup programs.\n4. Install pending Windows and driver updates.\n5. Run a disk cleanup and a malware scan.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB026",
+    "title": "Blue Screen and Boot Failures",
+    "category": "System",
+    "ticket_category": "System",
+    "tags": [
+      "blue screen",
+      "boot",
+      "startup",
+      "bsod"
+    ],
+    "content": "Use this guide when Windows shows a blue screen or does not start.\n\n1. Note the stop code shown on the screen.\n2. Disconnect external devices and restart.\n3. Boot into safe mode and uninstall recent updates or drivers.\n4. Run startup repair from recovery options.\n5. Escalate for a reimage if the system still does not start.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB027",
+    "title": "Server Outage Response",
+    "category": "System",
+    "ticket_category": "System",
+    "tags": [
+      "outage",
+      "server",
+      "down",
+      "critical"
+    ],
+    "content": "Follow this procedure for outages that affect many users.\n\n1. Confirm the outage and the affected services.\n2. Open a major incident and notify the on-call engineer.\n3. Check server, network and storage health dashboards.\n4. Communicate the status to affected users.\n5. Restart or fail over the failed service according to the runbook.\n6. Document the cause and the fix after recovery.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB028",
+    "title": "Low Disk Space",
+    "category": "System",
+    "ticket_category": "System",
+    "tags": [
+      "disk",
+      "space",
+      "storage",
+      "full"
+    ],
+    "content": "Use this guide when a disk or drive is almost full.\n\n1. Identify the largest folders and files.\n2. Delete temporary files and empty the recycle bin.\n3. Archive old logs and data to approved storage.\n4. Extend the volume or request more storage if usage keeps growing.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB029",
+    "title": "Windows Updates and Patching",
+    "category": "System",
+    "ticket_category": "System",
+    "tags": [
+      "update",
+      "patch",
+      "windows",
+      "reboot"
+    ],
+    "content": "Use this guide when updates fail or a restart is required.\n\n1. Restart the computer to finish pending updates.\n2. Check that there is enough free disk space.\n3. Run the Windows Update troubleshooter.\n4. Install the failed update manually from the update catalog.\n5. Escalate if the update keeps failing.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB030",
+    "title": "Lost or Stolen Device and Security Incidents",
+    "category": "IT Policies",
+    "ticket_category": "System",
+    "tags": [
+      "stolen",
+      "lost",
+      "security",
+      "malware",
+      "virus"
+    ],
+    "content": "Treat lost devices and suspected malware as security incidents.\n\n1. Report the incident to the security team immediately.\n2. Lock or remotely wipe a lost or stolen device.\n3. Disable the user's active sessions and reset the password.\n4. Isolate a device suspected of malware from the network.\n5. Run a full malware scan before reconnecting.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB031",
+    "title": "Mailbox Full and Archiving",
+    "category": "Software",
+    "ticket_category": "Software",
+    "tags": [
+      "mailbox",
+      "full",
+      "archive",
+      "quota"
+    ],
+    "content": "Use this guide when the mailbox is almost full.\n\n1. Empty deleted items and junk mail folders.\n2. Archive old emails to the online archive.\n3. Remove large attachments.\n4. Request a larger quota if the business needs it.",
+    "last_updated": "2026-10-01"
+  },
+  {
+    "id": "KB032",
+    "title": "Remote Desktop and Citrix Problems",
+    "category": "Network Connectivity",
+    "ticket_category": "Network",
+    "tags": [
+      "citrix",
+      "remote desktop",
+      "rdp",
+      "session"
+    ],
+    "content": "Use this guide when a remote desktop or Citrix session will not start or freezes.\n\n1. Check the internet or VPN connection.\n2. Close the session and log off completely, then sign in again.\n3. Update the Citrix Workspace or remote desktop client.\n4. Clear the client cache.\n5. Report the error code and server name if the problem continues.",
+    "last_updated": "2026-10-01"
+  }
+]
