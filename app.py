@@ -1,30 +1,26 @@
 import re
 from flask import Flask, render_template, request, jsonify
-from classifier import predict_category
+import json
+import os
+from classifier import predict_category, predict_severity
 from database import initialize_database, save_ticket, get_tickets
 
 app = Flask(__name__)
+
+
+def load_report():
+    path = os.path.join("data", "evaluation_report.json")
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as handle:
+        return json.load(handle)
+
+
 DEPARTMENTS = ["IT", "HR", "Finance", "Sales", "Marketing", "Operations"]
 IMPACTS = ["Low", "Medium", "High"]
 
-def predict_severity(text):
-    text = text.lower()
-    critical_words = ["server down", "entire company", "production down", "security breach"]
-    high_words = ["urgent", "cannot work", "business stopped", "client meeting", "vpn not working"]
-    medium_words = ["slow", "error", "problem", "issue"]
-    for word in critical_words:
-        if word in text:
-            return "Critical"
-    for word in high_words:
-        if word in text:
-            return "High"
-    for word in medium_words:
-        if word in text:
-            return "Medium"
-    return "Low"
-
 def calculate_priority(severity, business_impact):
-    if severity == "Critical" and business_impact == "High":
+    if severity == "Critical":
         return "P1"
     if severity == "High" and business_impact == "High":
         return "P1"
@@ -80,8 +76,8 @@ def index():
         except FileNotFoundError as exc:
             error = str(exc)
     return render_template(
-        "index.html", result=result, error=error,
-        tickets=get_tickets(), departments=DEPARTMENTS, impacts=IMPACTS
+        "index.html", result=result, error=error, form=request.form if error else {},
+        tickets=get_tickets(), departments=DEPARTMENTS, impacts=IMPACTS, report=load_report()
     )
 
 @app.route("/api/tickets", methods=["POST"])
