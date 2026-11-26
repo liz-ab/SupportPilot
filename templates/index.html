@@ -14,6 +14,8 @@
     <button class="nav-item active" data-view="dashboard">Dashboard</button>
     <button class="nav-item" data-view="submit">New ticket</button>
     <button class="nav-item" data-view="tickets">All tickets</button>
+    <button class="nav-item" data-view="resolution">AI resolution</button>
+    <button class="nav-item" data-view="kb">Knowledge base</button>
     <button class="nav-item" data-view="model">Model</button>
     <div class="sidebar-foot">Ticket processing and classification</div>
   </aside>
@@ -31,6 +33,7 @@
         <div><div class="k">Confidence</div><div class="v">{{ "%.0f"|format(result.confidence * 100) }}%</div>
           <div class="bar"><span style="width:{{ '%.0f'|format(result.confidence * 100) }}%"></span></div></div>
       </div>
+      <p class="note">AI resolution: {{ result.resolution.status.replace('_',' ').title() }} · <a href="#" id="open-resolution">View resolution</a></p>
     </div>
     {% endif %}
 
@@ -81,6 +84,7 @@
           <div class="metric-row"><span>2. Predict the category</span></div>
           <div class="metric-row"><span>3. Assess severity</span></div>
           <div class="metric-row"><span>4. Set priority from severity and business impact</span></div>
+          <div class="metric-row"><span>5. Search the knowledge base and draft a resolution</span></div>
           <p class="note">Categories: Network, VPN, Password, Software, Hardware, System.</p>
         </div>
       </div>
@@ -101,6 +105,67 @@
           <tbody id="rows"></tbody>
         </table></div>
         <div class="pager"><span id="count"></span><span><button class="btn ghost" id="prev">Previous</button><button class="btn ghost" id="next">Next</button></span></div>
+      </div>
+    </section>
+
+
+    <!-- AI resolution -->
+    <section class="view" id="view-resolution">
+      <div class="page-head">
+        <div><h1>Knowledge retrieval &amp; resolution generation</h1><p>Troubleshooting steps drawn from the knowledge base.</p></div>
+        <select id="res-ticket" aria-label="Ticket"></select>
+      </div>
+      <div id="res-empty" class="card empty" hidden>No tickets yet. Submit a ticket to generate a resolution.</div>
+      <div class="grid two" id="res-body">
+        <div class="card">
+          <div class="card-head"><h2>Current ticket</h2><span class="badge" id="r-status"></span></div>
+          <div class="ref" id="r-ref"></div>
+          <h3 id="r-title"></h3>
+          <p class="desc" id="r-desc"></p>
+          <div class="chips" id="r-chips"></div>
+          <label for="r-query">Generated search query</label>
+          <input id="r-query" readonly>
+          <h2 style="margin-top:18px">Retrieved articles</h2>
+          <div id="r-docs"></div>
+        </div>
+        <div class="card">
+          <h2>AI resolution generator</h2>
+          <div class="workflow" id="r-workflow"></div>
+          <div class="gen" id="r-gen"></div>
+          <div class="actions" id="r-actions">
+            <button class="btn" data-outcome="resolved" type="button">Mark resolved</button>
+            <button class="btn ghost" data-outcome="escalated" type="button">Escalate</button>
+            <button class="btn ghost" id="r-regen" type="button">Regenerate</button>
+            <span class="note" id="r-outcome"></span>
+          </div>
+          <div class="grid three tiles">
+            <div class="tile"><div class="k">Retrieval accuracy</div><div class="v" id="m-retrieval">–</div></div>
+            <div class="tile"><div class="k">Resolution rate</div><div class="v" id="m-rate">–</div></div>
+            <div class="tile"><div class="k">Avg. response time</div><div class="v" id="m-time">–</div></div>
+          </div>
+          <p class="note" id="m-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Knowledge base -->
+    <section class="view" id="view-kb">
+      <div class="page-head"><div><h1>Knowledge base</h1><p><span id="kb-count"></span> articles available to the resolution generator.</p></div></div>
+      <div class="grid split">
+        <div class="card">
+          <div class="toolbar"><input id="kb-search" type="search" placeholder="Search the knowledge base" aria-label="Search the knowledge base"></div>
+          <div id="kb-list"></div>
+        </div>
+        <div class="card">
+          <h2>Add article</h2><p class="sub">New articles are searchable immediately.</p>
+          <form id="kb-form" class="form-grid">
+            <div class="span2"><label for="kb-title">Title</label><input id="kb-title" required></div>
+            <div><label for="kb-category">Category</label><input id="kb-category" placeholder="e.g. Network Connectivity"></div>
+            <div><label for="kb-tc">Ticket category</label><select id="kb-tc"><option value="">None</option><option>Network</option><option>VPN</option><option>Password</option><option>Software</option><option>Hardware</option><option>System</option></select></div>
+            <div class="span2"><label for="kb-content">Content</label><textarea id="kb-content" placeholder="Short description, then numbered steps" required></textarea></div>
+            <div class="span2"><button class="btn" type="submit">Add article</button> <span class="note" id="kb-msg"></span></div>
+          </form>
+        </div>
       </div>
     </section>
 
@@ -128,7 +193,12 @@
 </div>
 <script id="ticket-data" type="application/json">{{ tickets|tojson }}</script>
 <script id="report-data" type="application/json">{{ report|tojson }}</script>
+<script id="resolution-data" type="application/json">{{ resolutions|tojson }}</script>
+<script id="metrics-data" type="application/json">{{ metrics|tojson }}</script>
+<script id="kb-data" type="application/json">{{ kb|tojson }}</script>
+<script>window.LATEST_TICKET = {{ latest_id|tojson }};</script>
 <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
-{% if result or error %}<script>document.querySelector('[data-view="{{ 'dashboard' if result else 'submit' }}"]').click();</script>{% endif %}
+<script src="{{ url_for('static', filename='resolution.js') }}"></script>
+{% if result or error %}<script>document.querySelector('[data-view="{{ 'resolution' if result else 'submit' }}"]').click();</script>{% endif %}
 </body>
 </html>
