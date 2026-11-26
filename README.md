@@ -47,6 +47,63 @@ The hand-labelled results are the most realistic. Category accuracy is above 85%
 
 Network, VPN, Password, Software, Hardware, System.
 
+## Milestone 2: Knowledge retrieval and resolution generation
+
+Every ticket is analysed, matched against the knowledge base and given a troubleshooting resolution (a Retrieval-Augmented Generation pipeline).
+
+```
+Ticket -> Analysis & query -> Knowledge-base retrieval -> Context augmentation -> Resolution (with citations)
+```
+
+| Part | File |
+|---|---|
+| Settings (thresholds, retriever, optional LLM) | `config.py` |
+| Knowledge base (32 articles) and loader | `data/knowledge_base.json`, `rag/knowledge_base.py` |
+| Ticket analysis and query generation | `rag/analyzer.py` |
+| Retrieval: TF-IDF, semantic (chunked) and hybrid | `rag/retriever.py` |
+| Context building and resolution generation | `rag/generator.py` |
+| Pipeline with workflow status | `rag/pipeline.py` |
+| Data classes | `models/schemas.py` |
+| Retrieval evaluation | `evaluate_rag.py`, `data/retrieval_eval.csv` |
+
+**Knowledge base.** Add articles to `data/knowledge_base.json`, drop `.md` or `.txt` files into `data/kb_docs/` (first line is the title), or use the Knowledge base page or `POST /api/knowledge-base`.
+
+**Retrieval.** TF-IDF with cosine similarity is the default. `RAG_RETRIEVER=semantic` or `hybrid` switches to chunked dense vectors (latent semantic analysis, or a sentence-transformers model when `RAG_EMBEDDING_MODEL` is set and the package is installed). Articles below `RAG_MIN_RELEVANCE` (0.08) are dropped. If none remain, the ticket gets `INSUFFICIENT_KNOWLEDGE` and is flagged for escalation. The cut-off is lower than the 0.30 in the workshop example because TF-IDF scores on short tickets are low; it was chosen on the evaluation set.
+
+**Resolution.** Without an LLM key the generator reuses the steps written in the retrieved articles and cites each one (`Source: KB001 – VPN Troubleshooting Guide`). Set `LLM_API_KEY` (and optionally `LLM_API_URL`, `LLM_MODEL`) to use any OpenAI-compatible chat endpoint with the prompt from the project brief. Only steps that cite a retrieved article are accepted; otherwise it falls back to the built-in generator. The LLM path has not been run against a live endpoint.
+
+**Metrics** shown in the interface are calculated:
+- Retrieval accuracy: share of test tickets where an accepted article is in the results (`python evaluate_rag.py`).
+- Resolution rate: tickets marked Resolved divided by tickets marked Resolved or Escalated by agents.
+- Average response time: measured for every pipeline run.
+
+### Retrieval results
+
+Measured on 61 real helpdesk tickets (`data/retrieval_eval.csv`; 53 answerable, 8 with no suitable article). The accepted articles were chosen by hand.
+
+| Metric | Result |
+|---|---|
+| Retrieval accuracy (accepted article in top 3) | 96.2% |
+| Top-1 accuracy | 77.4% |
+| Correctly rejected unanswerable tickets | 0 of 8 |
+
+The retriever settings were tuned on these same tickets, so the figures are optimistic. The system does not yet reject unrelated tickets reliably. Weak matches are flagged to the agent, and the knowledge base needs more articles for broader coverage.
+
+### API
+
+| Endpoint | Purpose |
+|---|---|
+| `POST /api/tickets` | Create a ticket; the response includes the resolution |
+| `POST /api/tickets/<id>/resolve` | Re-run the pipeline for a ticket |
+| `GET /api/tickets/<id>/resolution` | Stored resolution and workflow status |
+| `POST /api/tickets/<id>/feedback` | `{"outcome": "resolved"}` or `"escalated"` |
+| `POST /api/resolve` | Resolution for free text, nothing stored |
+| `GET /api/metrics` | System metrics |
+| `GET /api/knowledge-base`, `GET /api/knowledge-base/search?q=` | List or search articles |
+| `POST /api/knowledge-base` | Add an article |
+
+Run the tests with `python -m unittest discover -s tests -t .`.
+
 ## Technologies
 
 Python, Flask, Pandas, scikit-learn, TF-IDF, Logistic Regression, Joblib, SQLite, HTML, CSS and Chart.js.
@@ -103,14 +160,14 @@ Severity comes from a keyword rule engine in `labeling.py` (Critical, High, Medi
 
 ## Project files
 
-- `app.py`: Flask routes, ticket processing and priority.
+- `app.py`: Flask routes, ticket processing, priority and resolution API.
 - `labeling.py`: text cleaning, category rules and severity rules.
 - `build_dataset.py`: builds `data/ticket_dataset.csv` from the raw sources.
 - `train_model.py`: trains the classifier and writes the evaluation report.
 - `classifier.py`: model loading and prediction.
 - `evaluate_severity.py`: scores severity against the hand-labelled sample.
 - `database.py`: SQLite table creation and ticket storage.
-- `templates/index.html`, `static/style.css`, `static/dashboard.js`: web interface and dashboard.
+- `templates/index.html`, `static/style.css`, `static/dashboard.js`, `static/resolution.js`: web interface, dashboard, AI resolution and knowledge base pages.
 - `data/ticket_dataset.csv`: cleaned training data with source column.
 - `data/audit_sample.csv`: 120 hand-labelled tickets used only for evaluation.
 - `data/dataset_summary.json`, `data/evaluation_report.json`: build and evaluation details.
@@ -122,4 +179,5 @@ Severity comes from a keyword rule engine in `labeling.py` (Critical, High, Medi
 - The hand-labelled sample is small (120 tickets), so measured accuracy has a wide margin of error.
 - Severity is keyword-based and can miss context.
 - Confidence is a probability estimate, not a guarantee.
-- This is a Milestone 1 prototype, not a production ticketing system.
+- Unrelated tickets are not yet rejected reliably by retrieval (see Retrieval results).
+- This is a prototype, not a production ticketing system.

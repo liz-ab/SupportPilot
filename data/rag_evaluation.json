@@ -1,0 +1,14 @@
+{
+  "in_scope_tickets": 53,
+  "out_of_scope_tickets": 8,
+  "top1_accuracy": 0.7736,
+  "retrieval_accuracy": 0.9623,
+  "deflection_rate": 0.0,
+  "retriever": "tfidf",
+  "top_k": 3,
+  "min_relevance": 0.08,
+  "category_boost": 0.3,
+  "knowledge_base_articles": 32,
+  "test_tickets": 61,
+  "note": "Tickets are real helpdesk tickets; the accepted articles were chosen by hand."
+}
